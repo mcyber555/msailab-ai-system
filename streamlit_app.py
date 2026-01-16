@@ -17,7 +17,7 @@ LANG_MAP = {
         "result_head": "東証プライム 厳選100銘柄 AI解析結果",
         "unit": "社",
         "col_ticker": "Ticker", "col_name": "銘柄名", "col_sector": "業界",
-        "col_yield": "利回り(%)", "col_payout": "性向(%)", "col_roe": "ROE(%)", 
+        "col_yield": "利回り(%)", "col_payout": "配当性向(%)", "col_roe": "ROE(%)", 
         "col_price": "終値", "col_score": "AIスコア",
         "disclaimer": "📌 本解析はMS AI Lab独自開発のAIによる抽出サンプルです。信頼性担保のため主要100社を厳選しています。実運用では全3,800銘柄を解析します。",
         "f1_h": "**【運営組織】**", 
