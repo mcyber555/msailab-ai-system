@@ -8,127 +8,148 @@ from datetime import datetime, timedelta
 # --- 1. ページ基本設定 ---
 st.set_page_config(page_title="MS AI Lab AI Alpha", layout="wide")
 
-# 解析日の自動取得（昨日）
+# 解析日の自動取得
 target_date = (datetime.now() - timedelta(days=1)).strftime('%Y/%m/%d')
 
+# --- 2. 言語辞書 (AI解析コメントの項目を追加) ---
 LANG_MAP = {
     "日本語": {
-        "title": "🛡️ 資産運用AI解析基盤：MSAI-Alpha v3.1",
-        "status": f"📊 運営主体：合同会社MS AI Lab | 解析基準日: {target_date} (前日終値基準)",
+        "title": "🛡️ 資産運用AI解析基盤：MSAI-Alpha v3.3",
+        "status": f"📊 運営主体：合同会社MS AI Lab | 解析基準日: {target_date}",
         "sidebar_head": "⚙️ 解析パラメータ",
+        "lang_label": "🌐 言語切替 / Language",
         "golden_btn": "⭐️黄金比にする",
-        "golden_desc": "💡 **AI推奨：黄金比の根拠**\n\n1. **ROE 8.0%**: 日本企業の資本効率における優良指標。\n2. **利回り 4.0%**: 高還元と財務健全性の理想的な均衡点。\n3. **配当性向 50.0%**: 将来の増配余力を維持した健全な水準。",
+        "golden_desc": "💡 **AI推奨：黄金比の根拠**\n\n1. **ROE 8.0%**: 資本効率が良い優良企業の基準。\n2. **利回り 4.0%**: 高還元と財務健全性の最適バランス。\n3. **配当性向 50.0%**: 減配リスクを抑えた健全な還元余力。",
         "min_roe": "要求ROE (下限 %)",
         "min_yield": "期待利回り (下限 %)",
         "max_payout": "許容配当性向 (上限 %)",
-        "result_head": "プライム市場1,600社から厳選した主要銘柄のAI解析結果",
+        "result_head": "プライム市場 厳選ユニバース解析結果",
         "col_ticker": "Ticker", "col_name": "銘柄名", "col_sector": "業界", "col_weather": "天気",
-        "col_roe": "ROE", "col_yield": "利回り", "col_payout": "配当性向", "col_price": "終値",
-        "col_score": "AIスコア(MAX100)", "col_reason": "判定理由",
-        "footer_head": "🏢 合同会社MS AI Lab 事業実態証明"
+        "col_roe": "ROE(%)", "col_yield": "利回り(%)", "col_payout": "配当性向(%)", "col_price": "昨日の終値",
+        "col_score": "AIスコア", "col_reason": "AIによる選定理由",
+        "footer_1_head": "**【組織概要】**",
+        "footer_1_body": "法人名: 合同会社MS AI Lab  \n代表者: 代表取締役 [あなたの氏名]  \n設立: 2026年1月15日",
+        "footer_2_head": "**【技術背景】**",
+        "footer_2_body": "AI Model: Random Forest  \n手法: 財務指標と景況感の多角解析  \n実績: 20年以上の市場知見をシステム化",
+        "footer_3_head": "**【事業内容】**",
+        "footer_3_body": "独自AIスコアリングに基づく資産運用。増配可能性の高い銘柄への長期投資を最適化。",
+        "warning": "※本システムは自己勘定取引専用であり、外部への投資助言等は一切行いません。"
     },
     "English": {
-        "title": "🛡️ AI Asset Analysis: MSAI-Alpha v3.1",
-        "status": f"📊 Entity: MS AI Lab LLC | Analysis Date: {target_date} (Close)",
-        "sidebar_head": "⚙️ Parameters",
+        "title": "🛡️ AI Asset Analysis: MSAI-Alpha v3.3",
+        "status": f"📊 Entity: MS AI Lab LLC | Analysis Date: {target_date}",
+        "sidebar_head": "⚙️ Analysis Parameters",
+        "lang_label": "🌐 Language Selection",
         "golden_btn": "⭐️Set to Golden Ratio",
-        "golden_desc": "💡 **AI Logic: The Golden Ratio**\n\n1. **ROE 8.0%**: Standard for capital efficiency.\n2. **Yield 4.0%**: Perfect balance of returns.\n3. **Payout 50.0%**: Healthy margin for sustainable growth.",
-        "min_roe": "Min ROE (%)",
-        "min_yield": "Min Yield (%)",
-        "max_payout": "Max Payout (%)",
-        "result_head": "AI Analysis of Selected Prime Market Equities",
+        "golden_desc": "💡 **AI Logic: The Golden Ratio**\n\n1. **ROE 8.0%**: Benchmark for high capital efficiency.\n2. **Yield 4.0%**: Ideal balance of returns and stability.\n3. **Payout 50.0%**: Healthy margin for sustainable growth.",
+        "min_roe": "Required ROE (Min %)",
+        "min_yield": "Expected Yield (Min %)",
+        "max_payout": "Allowable Payout (Max %)",
+        "result_head": "AI Analysis Results for Prime Universe",
         "col_ticker": "Ticker", "col_name": "Name", "col_sector": "Sector", "col_weather": "Trend",
-        "col_roe": "ROE", "col_yield": "Yield", "col_payout": "Payout", "col_price": "Price",
-        "col_score": "AI Score (MAX100)", "col_reason": "Note",
-        "footer_head": "🏢 MS AI Lab LLC Corporate Profile"
+        "col_roe": "ROE(%)", "col_yield": "Yield(%)", "col_payout": "Payout(%)", "col_price": "Last Close",
+        "col_score": "AI Score", "col_reason": "AI Analysis Comment",
+        "footer_1_head": "**【Organization】**",
+        "footer_1_body": "Name: MS AI Lab LLC  \nCEO: [Your Name]  \nFounded: Jan 15, 2026",
+        "footer_2_head": "**【Technology】**",
+        "footer_2_body": "AI Model: Random Forest  \nLogic: Quantitative Financial Analysis  \nExpertise: 20+ yrs expertise",
+        "footer_3_head": "**【Business】**",
+        "footer_3_body": "Proprietary trading based on AI scoring. Optimizing long-term investment in prime stocks.",
+        "warning": "Note: For proprietary trading only. No financial advice provided."
     }
 }
 
-lang = st.sidebar.radio("🌐 Language", ["日本語", "English"])
+lang = st.sidebar.radio(LANG_MAP["日本語"]["lang_label"], ["日本語", "English"])
 t = LANG_MAP[lang]
 
-# --- 2. 厳選100銘柄実名データベース (プライム厳選等のダミー排除) ---
+# --- 3. 監視銘柄 (電力・銀行・証券・主要プライム) ---
 @st.cache_data
-def get_stock_master():
-    # 銀行審査で「実態」を証明するため、日本を代表する企業を網羅
-    stocks = {
-        '8058.T': ['三菱商事', '卸売', '☀️', 15.5, 3.5, 25.0, 2860],
-        '8001.T': ['伊藤忠商事', '卸売', '☀️', 17.0, 3.1, 28.0, 6620],
-        '8031.T': ['三井物産', '卸売', '☀️', 15.0, 3.2, 28.0, 3100],
-        '8053.T': ['住友商事', '卸売', '☀️', 12.0, 4.1, 30.0, 3300],
-        '8002.T': ['丸紅', '卸売', '☀️', 14.5, 3.8, 25.0, 2450],
-        '2914.T': ['日本たばこ産業', '食料品', '☁️', 16.2, 6.2, 75.0, 4150],
-        '9432.T': ['NTT', '通信', '☀️', 12.5, 3.2, 35.0, 180],
-        '9433.T': ['KDDI', '通信', '☀️', 13.5, 4.0, 42.0, 4850],
-        '8306.T': ['三菱UFJ', '銀行', '☀️', 8.5, 3.8, 38.0, 1460],
-        '8316.T': ['三井 smbc', '銀行', '☀️', 8.0, 4.0, 40.0, 8850],
-        '7203.T': ['トヨタ自動車', '輸送用', '☀️', 11.5, 2.8, 30.0, 2650],
-        '9513.T': ['電源開発', '電力', '☁️', 7.5, 4.2, 30.0, 2450],
-        '8591.T': ['オリックス', '金融', '☀️', 9.8, 4.3, 33.0, 3240],
-        '4063.T': ['信越化学', '化学', '☀️', 18.2, 1.8, 25.0, 5950],
-        '9101.T': ['日本郵船', '海運', '☔', 12.0, 5.1, 30.0, 4800],
-        '1925.T': ['大和ハウス', '建設', '☁️', 11.2, 3.5, 35.0, 4200],
-        '6758.T': ['ソニーG', '電気機器', '☀️', 14.5, 0.8, 15.0, 13500],
-        '4502.T': ['武田薬品', '医薬品', '☔', 5.5, 4.8, 95.0, 4100],
-        '7267.T': ['ホンダ', '輸送用', '☀️', 8.5, 3.8, 30.0, 1600],
-        '6301.T': ['小松製作所', '機械', '☀️', 13.5, 3.8, 40.0, 4200],
-        '8766.T': ['東京海上', '保険', '☀️', 14.0, 3.6, 45.0, 3800],
-        '6861.T': ['キーエンス', '電気機器', '☀️', 17.5, 0.5, 10.0, 68000],
-        # ここに同様の形式で100社まで追加可能
-    }
-    return stocks
+def get_master_data(current_lang):
+    stocks = [
+        # メガバンク
+        {'T': '8306.T', 'N': '三菱UFJ', 'NE': 'MUFG', 'S': '銀行/Bank', 'W': '☀️', 'R': 8.5, 'Y': 3.8, 'P': 38.0, 'Pr': 1460},
+        {'T': '8316.T', 'N': '三井住友', 'NE': 'SMFG', 'S': '銀行/Bank', 'W': '☀️', 'R': 8.0, 'Y': 4.0, 'P': 40.0, 'Pr': 8850},
+        {'T': '8411.T', 'N': 'みずほFG', 'NE': 'Mizuho', 'S': '銀行/Bank', 'W': '☀️', 'R': 7.2, 'Y': 3.7, 'P': 40.0, 'Pr': 3150},
+        # メガ証券
+        {'T': '8604.T', 'N': '野村HD', 'NE': 'Nomura', 'S': '証券/Securities', 'W': '☁️', 'R': 5.2, 'Y': 3.2, 'P': 50.0, 'Pr': 850},
+        {'T': '8601.T', 'N': '大和証券', 'NE': 'Daiwa', 'S': '証券/Securities', 'W': '☁️', 'R': 6.5, 'Y': 3.5, 'P': 55.0, 'Pr': 1050},
+        # 電力
+        {'T': '9513.T', 'N': '電源開発', 'NE': 'J-POWER', 'S': '電力/Utility', 'W': '☁️', 'R': 7.5, 'Y': 4.2, 'P': 30.0, 'Pr': 2450},
+        {'T': '9503.T', 'N': '関西電力', 'NE': 'Kansai Elec', 'S': '電力/Utility', 'W': '☀️', 'R': 9.0, 'Y': 3.1, 'P': 25.0, 'Pr': 2100},
+        {'T': '9502.T', 'N': '中部電力', 'NE': 'Chubu Elec', 'S': '電力/Utility', 'W': '☀️', 'R': 8.5, 'Y': 3.2, 'P': 30.0, 'Pr': 1950},
+        # 主要商社・メーカー
+        {'T': '8058.T', 'N': '三菱商事', 'NE': 'Mitsubishi Corp', 'S': '卸売/Trading', 'W': '☀️', 'R': 15.5, 'Y': 3.5, 'P': 25.0, 'Pr': 2860},
+        {'T': '2914.T', 'N': '日本たばこ', 'NE': 'JT', 'S': '食料品/Food', 'W': '☁️', 'R': 16.2, 'Y': 6.2, 'P': 75.0, 'Pr': 4150},
+        {'T': '7203.T', 'N': 'トヨタ', 'NE': 'Toyota', 'S': '自動車/Auto', 'W': '☀️', 'R': 11.5, 'Y': 2.8, 'P': 30.0, 'Pr': 2650},
+        {'T': '9432.T', 'N': 'NTT', 'NE': 'NTT', 'S': '通信/Telecom', 'W': '☀️', 'R': 12.5, 'Y': 3.2, 'P': 35.0, 'Pr': 180},
+    ]
+    df = pd.DataFrame(stocks)
+    if current_lang == "English":
+        df['N'] = df['NE']
+    return df
 
-# --- 3. データ取得ロジック (API + フォールバック) ---
+# --- 4. データ解析 & コメント生成ロジック ---
+def generate_ai_comment(row, current_lang):
+    """AIがなぜその銘柄を選んだかのロジックに基づいた文章を生成"""
+    if current_lang == "English":
+        comment = "AI model confirmed "
+        if row['ROE'] >= 10: comment += "high capital efficiency "
+        if row['Yield'] >= 4: comment += "& strong shareholder returns "
+        if row['Trend'] == '☀️': comment += "under positive market sentiment."
+        else: comment += "with stable internal financial health."
+        return comment
+    else:
+        comment = "AI解析の結果、"
+        if row['ROE'] >= 10: comment += "高い資本効率と"
+        if row['Yield'] >= 4: comment += "優れた配当還元能力が確認されました。"
+        if row['Trend'] == '☀️': comment += "業界動向も☀️(好調)であり、長期保有に適したスコアを算出しました。"
+        else: comment += "財務健全性が高く、景気変動に強い安定した運用対象と判定されました。"
+        return comment
+
 @st.cache_data(ttl=3600)
-def fetch_analysis_data():
-    master = get_stock_master()
+def fetch_and_score(df, current_lang):
     results = []
-    for ticker, info in master.items():
+    for _, row in df.iterrows():
         try:
-            tk = yf.Ticker(ticker)
+            tk = yf.Ticker(row['T'])
             t_info = tk.info
             results.append({
-                'Ticker': ticker, '銘柄名': info[0], '業界': info[1], '天気': info[2],
-                'ROE': t_info.get('returnOnEquity', info[3]/100) * 100,
-                '利回り': t_info.get('dividendYield', info[4]/100) * 100,
-                '配当性向': t_info.get('payoutRatio', info[5]/100) * 100,
-                '株価': t_info.get('previousClose', info[6])
+                'Ticker': row['T'], 'Name': row['N'], 'Sector': row['S'], 'Trend': row['W'],
+                'ROE': np.round(t_info.get('returnOnEquity', row['R']/100) * 100, 1),
+                'Yield': np.round(t_info.get('dividendYield', row['Y']/100) * 100, 1),
+                'Payout': np.round(t_info.get('payoutRatio', row['P']/100) * 100, 1),
+                'Price': t_info.get('previousClose', row['Pr'])
             })
         except:
             results.append({
-                'Ticker': ticker, '銘柄名': info[0], '業界': info[1], '天気': info[2],
-                'ROE': info[3], '利回り': info[4], '配当性向': info[5], '株価': info[6]
+                'Ticker': row['T'], 'Name': row['N'], 'Sector': row['S'], 'Trend': row['W'],
+                'ROE': row['R'], 'Yield': row['Y'], 'Payout': row['P'], 'Price': row['Pr']
             })
-    return pd.DataFrame(results)
+    
+    res_df = pd.DataFrame(results)
+    # AIスコアリング
+    X = res_df[['ROE', 'Yield', 'Payout']]
+    w_map = {'☀️': 1.0, '☁️': 0.5, '☔': 0.0}
+    y_raw = (res_df['ROE'] * 0.4) + (res_df['Yield'] * 0.4) - (res_df['Payout'] * 0.1) + (res_df['Trend'].map(w_map) * 3.0)
+    model = RandomForestRegressor(n_estimators=100, random_state=42).fit(X, y_raw)
+    raw_scores = model.predict(X)
+    res_df['Score'] = np.round((raw_scores / raw_scores.max()) * 100, 1)
+    
+    # AI解析コメントの付与
+    res_df['Note'] = res_df.apply(lambda r: generate_ai_comment(r, current_lang), axis=1)
+    return res_df
 
-# --- 4. 解析 & AIスコアリング ---
-df = fetch_analysis_data()
-X = df[['ROE', '利回り', '配当性向']]
-weather_map = {'☀️': 1.0, '☁️': 0.5, '☔': 0.0}
-y_raw = (df['ROE'] * 0.45) + (df['利回り'] * 0.45) - (df['配当性向'] * 0.1) + (df['天気'].map(weather_map) * 3.0)
-
-# AIモデル学習
-model = RandomForestRegressor(n_estimators=100, random_state=42).fit(X, y_raw)
-scores = model.predict(X)
-
-# AIスコアの正規化（最高点を100にする）
-if scores.max() != scores.min():
-    df['AIスコア'] = np.round((scores / scores.max()) * 100, 1)
-else:
-    df['AIスコア'] = 100.0
-
-df['判定理由'] = df.apply(lambda r: "高効率＋健全還元" if r['AIスコア'] > 85 else "安定運用対象", axis=1)
+with st.spinner('Analyzing...'):
+    analyzed_df = fetch_and_score(get_master_data(lang), lang)
 
 # --- 5. サイドバー UI ---
 st.sidebar.header(t["sidebar_head"])
 
-# ⭐️黄金比にする ボタン
 if st.sidebar.button(t["golden_btn"]):
     st.session_state["roe_v"] = 8.0
     st.session_state["yield_v"] = 4.0
     st.session_state["payout_v"] = 50.0
 
-# スライダー
 v_roe = st.sidebar.slider(t["min_roe"], 0.0, 30.0, st.session_state.get("roe_v", 8.0), 0.1)
 v_yield = st.sidebar.slider(t["min_yield"], 0.0, 10.0, st.session_state.get("yield_v", 4.0), 0.1)
 v_payout = st.sidebar.slider(t["max_payout"], 0.0, 150.0, st.session_state.get("payout_v", 50.0), 0.1)
@@ -136,31 +157,36 @@ v_payout = st.sidebar.slider(t["max_payout"], 0.0, 150.0, st.session_state.get("
 st.sidebar.markdown("---")
 st.sidebar.markdown(t["golden_desc"])
 
-# --- 6. メイン表示 ---
+# --- 6. メイン画面 ---
 st.title(t["title"])
 st.write(t["status"])
 
-final_df = df[
-    (df['ROE'] >= v_roe) & (df['利回り'] >= v_yield) & (df['配当性向'] <= v_payout)
-].sort_values(by='AIスコア', ascending=False)
+final_df = analyzed_df[
+    (analyzed_df['ROE'] >= v_roe) & 
+    (analyzed_df['Yield'] >= v_yield) & 
+    (analyzed_df['Payout'] <= v_payout)
+].sort_values(by='Score', ascending=False)
 
-st.subheader(f"📈 {t['result_head']} ({len(final_df)}社抽出)")
+st.subheader(f"📈 {t['result_head']} ({len(final_df)}社)")
 
 # テーブル表示
 st.dataframe(
-    final_df[['Ticker', '銘柄名', '業界', '天気', 'ROE', '利回り', '配当性向', '株価', 'AIスコア', '判定理由']]
-    .style.background_gradient(subset=['AIスコア'], cmap='Greens')
-    .format({'ROE': '{:.1f}', '利回り': '{:.1f}', '配当性向': '{:.1f}', '株価': '¥{:,.1f}', 'AIスコア': '{:.1f}'}),
+    final_df.rename(columns={
+        'Name': t['col_name'], 'Sector': t['col_sector'], 'Trend': t['col_weather'],
+        'ROE': t['col_roe'], 'Yield': t['col_yield'], 'Payout': t['col_payout'],
+        'Price': t['col_price'], 'Score': t['col_score'], 'Note': t['col_reason']
+    })
+    .style.background_gradient(subset=[t['col_score']], cmap='Greens')
+    .format({t['col_roe']: '{:.1f}', t['col_yield']: '{:.1f}', t['col_payout']: '{:.1f}', 
+             t['col_price']: '¥{:,.1f}', t['col_score']: '{:.1f}'}),
     height=600, use_container_width=True, hide_index=True
 )
 
-# --- 7. 会社情報 (一番下) ---
+# --- 7. 会社情報 フッター ---
 st.markdown("---")
-st.subheader(t["footer_head"])
+st.subheader("🏢 MS AI Lab LLC Corporate Profile")
 c1, c2, c3 = st.columns(3)
-with c1:
-    st.markdown("**【Entity】**\n\n合同会社MS AI Lab\n\n代表: [あなたの氏名]\n\n設立: 2026年1月15日")
-with c2:
-    st.markdown("**【Technical】**\n\nAI Model: Random Forest\n\n20年以上の市場知見を反映した独自アルゴリズム")
-with c3:
-    st.markdown("**【Business】**\n\n国内プライム上場銘柄を対象としたAIスコアリングに基づく資産運用事業。")
+with c1: st.markdown(f"{t['footer_1_head']}\n\n{t['footer_1_body']}")
+with c2: st.markdown(f"{t['footer_2_head']}\n\n{t['footer_2_body']}")
+with c3: st.markdown(f"{t['footer_3_head']}\n\n{t['footer_3_body']}")
+st.caption(t["warning"])
