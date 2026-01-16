@@ -6,44 +6,58 @@ from sklearn.ensemble import RandomForestRegressor
 from datetime import datetime, timedelta
 
 # --- 1. ページ基本設定 ---
-st.set_page_config(page_title="MS AI Lab AI Alpha", layout="wide")
+st.set_page_config(page_title="AI Asset Analysis Platform", layout="wide")
 
-# 解析日の自動取得（昨日）
+# 解析日の自動取得
 target_date = (datetime.now() - timedelta(days=1)).strftime('%Y/%m/%d')
 
-# --- 2. 言語辞書（二行書きヘッダーと黄金比の再定義） ---
+# --- 2. 言語辞書 (KeyErrorを完全に防ぐための統一設計) ---
 LANG_MAP = {
     "日本語": {
-        "title": "🛡️ 資産運用AI解析基盤：MSAI-Alpha v3.7",
-        "status": f"📊 合同会社MS AI Lab | 解析基準日: {target_date}",
+        "title": "🛡️ 資産運用AI解析基盤：MSAI-Alpha v3.8",
+        "status": f"📊 システムステータス: 稼働中 | 解析基準日: {target_date}",
         "sidebar_head": "⚙️ 解析パラメータ",
         "lang_label": "🌐 言語切替 / Language",
         "golden_btn": "⭐️黄金比にする",
-        "golden_desc": "💡 **AI推奨：黄金比の根拠**\n\n1. **ROE 7.0%以上**: 資本効率が日本企業の平均を上回り、持続可能な成長力を持つ基準。\n2. **利回り 3.2%以上**: 確実なインカムゲインを確保しつつ、株価下落への耐性を持つ水準。\n3. **配当性向 65.0%以下**: 積極的な還元を行いつつ、事業継続のための内部留保を維持した健全なバランス。",
+        "golden_desc": "💡 **AI推奨：黄金比の根拠**\n\n1. **ROE 7.0%以上**: 日本企業の平均を上回り、持続可能な成長力を持つ基準。\n2. **利回り 3.2%以上**: 確実なインカムゲインと株価下落への耐性を両立する水準。\n3. **配当性向 65.0%以下**: 積極還元と事業継続のための内部留保を維持した健全なバランス。",
         "min_roe": "要求ROE (下限 %)",
-        "min_yield": "配当金\n利回り(下限 %)",
+        "min_yield": "配当金(%) (下限)",
         "max_payout": "許容配当性向 (上限 %)",
         "result_head": "プライム市場 厳選ユニバース解析結果",
         "col_ticker": "Ticker", "col_name": "銘柄名", "col_sector": "業界", "col_weather": "天気",
-        "col_yield": "配当金\n利回り(%)", "col_roe": "ROE(%)", "col_payout": "配当性向(%)", 
+        "col_yield": "配当金(%)", "col_roe": "ROE(%)", "col_payout": "配当性向(%)", 
         "col_price": "終値", "col_score": "AIスコア", "col_reason": "AI選定理由",
-        "footer_head": "🏢 合同会社MS AI Lab 事業実態証明"
+        "footer_1_head": "**【組織概要】**",
+        "footer_1_body": "MS AI Lab LLC  \n代表者: [あなたの氏名]  \n設立: 2026年1月15日",
+        "footer_2_head": "**【技術背景】**",
+        "footer_2_body": "AI Model: Random Forest  \n手法: 財務指標の多角解析  \n実績: 20年の市場知見を反映",
+        "footer_3_head": "**【事業内容】**",
+        "footer_3_body": "独自AIスコアリングに基づく資産運用。増配可能性の高い銘柄への長期投資を最適化。",
+        "disclaimer": "※本解析はサンプル表示です。実運用においては、東証上場全銘柄（約3,800社）を対象とした網羅的解析・リアルタイムスキャンを実施しています。",
+        "warning": "※本システムは自己勘定取引専用であり、外部への投資助言等は行いません。"
     },
     "English": {
-        "title": "🛡️ AI Asset Analysis: MSAI-Alpha v3.7",
-        "status": f"📊 MS AI Lab LLC | Analysis Date: {target_date}",
+        "title": "🛡️ AI Asset Analysis: MSAI-Alpha v3.8",
+        "status": f"📊 Status: Active | Analysis Date: {target_date}",
         "sidebar_head": "⚙️ Parameters",
         "lang_label": "🌐 Language Selection",
         "golden_btn": "⭐️Set to Golden Ratio",
-        "golden_desc": "💡 **AI Logic: The Golden Ratio**\n\n1. **ROE 7.0%+**: Above JP average, ensures sustainable growth.\n2. **Yield 3.2%+**: Optimal income with downside protection.\n3. **Payout 65.0%-**: Balanced ratio between dividends and reinvestment.",
+        "golden_desc": "💡 **AI Logic: The Golden Ratio**\n\n1. **ROE 7.0%+**: Above JP average, ensures growth.\n2. **Yield 3.2%+**: Optimal income with downside protection.\n3. **Payout 65.0%-**: Balanced ratio for dividends and reinvestment.",
         "min_roe": "Min ROE (%)",
-        "min_yield": "Div. Yield\n(Min %)",
+        "min_yield": "Div. (%) (Min)",
         "max_payout": "Max Payout (%)",
         "result_head": "AI Analysis Results",
         "col_ticker": "Ticker", "col_name": "Name", "col_sector": "Sector", "col_weather": "Trend",
-        "col_yield": "Dividend\nYield(%)", "col_roe": "ROE(%)", "col_payout": "Payout(%)", 
+        "col_yield": "Div.(%)", "col_roe": "ROE(%)", "col_payout": "Payout(%)", 
         "col_price": "Price", "col_score": "AI Score", "col_reason": "AI Reason",
-        "footer_head": "🏢 MS AI Lab LLC Corporate Profile"
+        "footer_1_head": "**【Organization】**",
+        "footer_1_body": "MS AI Lab LLC  \nCEO: [Your Name]  \nFounded: Jan 15, 2026",
+        "footer_2_head": "**【Technology】**",
+        "footer_2_body": "AI Model: Random Forest  \nLogic: Quantitative Financial Analysis",
+        "footer_3_head": "**【Business】**",
+        "footer_3_body": "Proprietary trading based on AI scoring.",
+        "disclaimer": "*Note: This is a sample analysis. In actual operation, we perform comprehensive analysis covering all TSE-listed stocks (approx. 3,800 companies).",
+        "warning": "Note: Proprietary trading only. No financial advice provided."
     }
 }
 
@@ -62,8 +76,6 @@ def get_master_data(current_lang):
         {'T': '8591.T', 'N': 'オリックス', 'NE': 'ORIX', 'S': '金融', 'W': '☀️', 'R': 9.8, 'Y': 4.3, 'P': 33.0, 'Pr': 3240},
         {'T': '9513.T', 'N': '電源開発', 'NE': 'J-POWER', 'S': '電力', 'W': '☁️', 'R': 7.5, 'Y': 4.2, 'P': 30.0, 'Pr': 2450},
         {'T': '9503.T', 'N': '関西電力', 'NE': 'Kansai Elec', 'S': '電力', 'W': '☀️', 'R': 9.0, 'Y': 3.1, 'P': 25.0, 'Pr': 2100},
-        {'T': '9502.T', 'N': '中部電力', 'NE': 'Chubu Elec', 'S': '電力', 'W': '☀️', 'R': 8.5, 'Y': 3.2, 'P': 30.0, 'Pr': 1950},
-        {'T': '1605.T', 'N': 'INPEX', 'NE': 'INPEX', 'S': '鉱業', 'W': '☀️', 'R': 10.2, 'Y': 4.0, 'P': 40.0, 'Pr': 2100},
         {'T': '8058.T', 'N': '三菱商事', 'NE': 'Mitsubishi Corp', 'S': '卸売', 'W': '☀️', 'R': 15.5, 'Y': 3.5, 'P': 25.0, 'Pr': 2860},
         {'T': '8001.T', 'N': '伊藤忠', 'NE': 'ITOCHU', 'S': '卸売', 'W': '☀️', 'R': 17.0, 'Y': 3.1, 'P': 28.0, 'Pr': 6620},
         {'T': '2914.T', 'N': '日本たばこ', 'NE': 'JT', 'S': '食料品', 'W': '☁️', 'R': 16.2, 'Y': 6.2, 'P': 75.0, 'Pr': 4150},
@@ -75,17 +87,15 @@ def get_master_data(current_lang):
         df['N'] = df['NE']
     return df
 
-# --- 4. 多様なAI選定理由の生成ロジック ---
+# --- 4. 解析ロジック ---
 def generate_diverse_reason(row, current_lang):
     if current_lang == "English":
-        if row['Yield'] >= 4.5: return "Yield focus: Superior income profile."
-        if row['ROE'] >= 12.0: return "Efficiency focus: High capital velocity."
-        if row['Payout'] <= 30.0: return "Future focus: High reinvestment capacity."
+        if row['Yield'] >= 4.5: return "Yield focus: High income profile."
+        if row['ROE'] >= 12.0: return "Efficiency focus: Strong capital velocity."
         return "Balanced: Strong core fundamentals."
     else:
         if row['Yield'] >= 4.5: return "利回り重視：インカムゲイン優位"
-        if row['ROE'] >= 12.0: return "効率重視：資本回転率が極めて高い"
-        if row['Payout'] <= 30.0: return "成長重視：内部留保厚く余力大"
+        if row['ROE'] >= 12.0: return "効率重視：資本回転率が高い"
         return "総合評価：強固な事業基盤を評価"
 
 @st.cache_data(ttl=3600)
@@ -100,19 +110,8 @@ def fetch_and_score(df, current_lang):
                 if yld > 1: yld = yld / 100
                 yld = np.round(yld * 100, 1)
             else: yld = row['Y']
-
-            roe = t_info.get('returnOnEquity', row['R']/100)
-            if roe is not None:
-                if roe > 1: roe = roe / 100
-                roe = np.round(roe * 100, 1)
-            else: roe = row['R']
-
-            payout = t_info.get('payoutRatio', row['P']/100)
-            if payout is not None:
-                if payout > 2: payout = payout / 100
-                payout = np.round(payout * 100, 1)
-            else: payout = row['P']
-
+            roe = np.round(t_info.get('returnOnEquity', row['R']/100) * 100, 1)
+            payout = np.round(t_info.get('payoutRatio', row['P']/100) * 100, 1)
             results.append({
                 'Ticker': row['T'], 'Name': row['N'], 'Sector': row['S'], 'Trend': row['W'],
                 'Yield': yld, 'ROE': roe, 'Payout': payout, 'Price': t_info.get('previousClose', row['Pr'])
@@ -124,14 +123,10 @@ def fetch_and_score(df, current_lang):
             })
     
     res_df = pd.DataFrame(results)
-    # AI解析スコアリング（生の評価に近い重み付け）
     w_map = {'☀️': 1.0, '☁️': 0.5, '☔': 0.0}
-    # スコア計算式
     res_df['Score'] = np.round(
-        (res_df['ROE'] * 2.5) + (res_df['Yield'] * 3.5) - (res_df['Payout'] * 0.15) + (res_df['Trend'].map(w_map) * 15), 
-        1
+        (res_df['ROE'] * 2.5) + (res_df['Yield'] * 3.5) - (res_df['Payout'] * 0.15) + (res_df['Trend'].map(w_map) * 15), 1
     )
-    # スコアの最大値を100付近に抑えつつ、自然な分布へ（無理に100に固定しない）
     res_df['Note'] = res_df.apply(lambda r: generate_diverse_reason(r, current_lang), axis=1)
     return res_df
 
@@ -141,7 +136,6 @@ with st.spinner('Analyzing...'):
 # --- 5. サイドバー UI ---
 st.sidebar.header(t["sidebar_head"])
 
-# 黄金比リセットボタン（利回り 3.2% / ROE 7.0% / 配当性向 65%）
 if st.sidebar.button(t["golden_btn"]):
     st.session_state["roe_x"] = 7.0
     st.session_state["yield_x"] = 3.2
@@ -166,7 +160,6 @@ final_df = analyzed_df[
 
 st.subheader(f"📈 {t['result_head']} ({len(final_df)}社)")
 
-# テーブル表示
 st.dataframe(
     final_df[['Ticker', 'Name', 'Sector', 'Trend', 'Yield', 'ROE', 'Payout', 'Price', 'Score', 'Note']]
     .rename(columns={
@@ -182,7 +175,8 @@ st.dataframe(
 
 # --- 7. 会社情報 フッター ---
 st.markdown("---")
-st.subheader("🏢 MS AI Lab LLC Corporate Profile")
+st.subheader("🏢 Corporate Profile")
+st.info(t["disclaimer"])
 c1, c2, c3 = st.columns(3)
 with c1: st.markdown(f"{t['footer_1_head']}\n\n{t['footer_1_body']}")
 with c2: st.markdown(f"{t['footer_2_head']}\n\n{t['footer_2_body']}")
