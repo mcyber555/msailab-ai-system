@@ -11,19 +11,19 @@ st.set_page_config(page_title="AI Asset Analysis Platform", layout="wide")
 # 解析日の自動取得
 target_date = (datetime.now() - timedelta(days=1)).strftime('%Y/%m/%d')
 
-# --- 2. 言語辞書 (KeyErrorを完全に防ぐための統一設計) ---
+# --- 2. 言語辞書 ---
 LANG_MAP = {
     "日本語": {
-        "title": "🛡️ 資産運用AI解析基盤：MSAI-Alpha v3.8",
+        "title": "🛡️ 資産運用AI解析基盤：MSAI-Alpha v3.9",
         "status": f"📊 システムステータス: 稼働中 | 解析基準日: {target_date}",
         "sidebar_head": "⚙️ 解析パラメータ",
         "lang_label": "🌐 言語切替 / Language",
         "golden_btn": "⭐️黄金比にする",
-        "golden_desc": "💡 **AI推奨：黄金比の根拠**\n\n1. **ROE 7.0%以上**: 日本企業の平均を上回り、持続可能な成長力を持つ基準。\n2. **利回り 3.2%以上**: 確実なインカムゲインと株価下落への耐性を両立する水準。\n3. **配当性向 65.0%以下**: 積極還元と事業継続のための内部留保を維持した健全なバランス。",
+        "golden_desc": "💡 **AI推奨：黄金比の根拠**\n\n1. **ROE 7.0%以上**: 資本効率が日本企業の平均を上回り、持続可能な成長力を持つ基準。\n2. **利回り 3.2%以上**: 確実なインカムゲインと株価下落への耐性を両立する水準。\n3. **配当性向 65.0%以下**: 積極還元と事業継続のための内部留保を維持した健全なバランス。",
         "min_roe": "要求ROE (下限 %)",
         "min_yield": "配当金(%) (下限)",
         "max_payout": "許容配当性向 (上限 %)",
-        "result_head": "プライム市場 厳選ユニバース解析結果",
+        "result_head": "プライム市場 厳選銘柄 AI解析結果",
         "col_ticker": "Ticker", "col_name": "銘柄名", "col_sector": "業界", "col_weather": "天気",
         "col_yield": "配当金(%)", "col_roe": "ROE(%)", "col_payout": "配当性向(%)", 
         "col_price": "終値", "col_score": "AIスコア", "col_reason": "AI選定理由",
@@ -37,12 +37,12 @@ LANG_MAP = {
         "warning": "※本システムは自己勘定取引専用であり、外部への投資助言等は行いません。"
     },
     "English": {
-        "title": "🛡️ AI Asset Analysis: MSAI-Alpha v3.8",
+        "title": "🛡️ AI Asset Analysis: MSAI-Alpha v3.9",
         "status": f"📊 Status: Active | Analysis Date: {target_date}",
         "sidebar_head": "⚙️ Parameters",
         "lang_label": "🌐 Language Selection",
         "golden_btn": "⭐️Set to Golden Ratio",
-        "golden_desc": "💡 **AI Logic: The Golden Ratio**\n\n1. **ROE 7.0%+**: Above JP average, ensures growth.\n2. **Yield 3.2%+**: Optimal income with downside protection.\n3. **Payout 65.0%-**: Balanced ratio for dividends and reinvestment.",
+        "golden_desc": "💡 **AI Logic: The Golden Ratio**\n\n1. **ROE 7.0%+**: Standard for capital efficiency.\n2. **Yield 3.2%+**: Optimal income with downside protection.\n3. **Payout 65.0%-**: Balanced ratio for dividends and reinvestment.",
         "min_roe": "Min ROE (%)",
         "min_yield": "Div. (%) (Min)",
         "max_payout": "Max Payout (%)",
@@ -56,7 +56,7 @@ LANG_MAP = {
         "footer_2_body": "AI Model: Random Forest  \nLogic: Quantitative Financial Analysis",
         "footer_3_head": "**【Business】**",
         "footer_3_body": "Proprietary trading based on AI scoring.",
-        "disclaimer": "*Note: This is a sample analysis. In actual operation, we perform comprehensive analysis covering all TSE-listed stocks (approx. 3,800 companies).",
+        "disclaimer": "*Note: This is a sample analysis. In actual operation, we cover all TSE-listed stocks (approx. 3,800 companies).",
         "warning": "Note: Proprietary trading only. No financial advice provided."
     }
 }
@@ -64,23 +64,39 @@ LANG_MAP = {
 lang = st.sidebar.radio(LANG_MAP["日本語"]["lang_label"], ["日本語", "English"])
 t = LANG_MAP[lang]
 
-# --- 3. 厳選マスターデータ ---
+# --- 3. 監視銘柄 (主要35社超に拡充：高配当・インフラ・商社) ---
 @st.cache_data
 def get_master_data(current_lang):
     stocks = [
+        # 高配当銘柄
+        {'T': '2914.T', 'N': '日本たばこ(JT)', 'NE': 'JT', 'S': '食料品', 'W': '☁️', 'R': 16.2, 'Y': 6.2, 'P': 75.0, 'Pr': 4150},
+        {'T': '1605.T', 'N': 'INPEX', 'NE': 'INPEX', 'S': '鉱業', 'W': '☀️', 'R': 10.2, 'Y': 4.0, 'P': 40.0, 'Pr': 2100},
+        {'T': '5020.T', 'N': 'ENEOS', 'NE': 'ENEOS', 'S': '石油', 'W': '☀️', 'R': 9.5, 'Y': 4.1, 'P': 35.0, 'Pr': 750},
+        # メガバンク・証券・金融
         {'T': '8306.T', 'N': '三菱UFJ', 'NE': 'MUFG', 'S': '銀行', 'W': '☀️', 'R': 8.5, 'Y': 3.8, 'P': 38.0, 'Pr': 1460},
         {'T': '8316.T', 'N': '三井住友', 'NE': 'SMFG', 'S': '銀行', 'W': '☀️', 'R': 8.0, 'Y': 4.0, 'P': 40.0, 'Pr': 8850},
         {'T': '8411.T', 'N': 'みずほFG', 'NE': 'Mizuho', 'S': '銀行', 'W': '☀️', 'R': 7.2, 'Y': 3.7, 'P': 40.0, 'Pr': 3150},
         {'T': '8604.T', 'N': '野村HD', 'NE': 'Nomura', 'S': '証券', 'W': '☁️', 'R': 5.2, 'Y': 3.2, 'P': 50.0, 'Pr': 850},
         {'T': '8601.T', 'N': '大和証券', 'NE': 'Daiwa', 'S': '証券', 'W': '☁️', 'R': 6.5, 'Y': 3.5, 'P': 55.0, 'Pr': 1050},
         {'T': '8591.T', 'N': 'オリックス', 'NE': 'ORIX', 'S': '金融', 'W': '☀️', 'R': 9.8, 'Y': 4.3, 'P': 33.0, 'Pr': 3240},
-        {'T': '9513.T', 'N': '電源開発', 'NE': 'J-POWER', 'S': '電力', 'W': '☁️', 'R': 7.5, 'Y': 4.2, 'P': 30.0, 'Pr': 2450},
-        {'T': '9503.T', 'N': '関西電力', 'NE': 'Kansai Elec', 'S': '電力', 'W': '☀️', 'R': 9.0, 'Y': 3.1, 'P': 25.0, 'Pr': 2100},
+        # 総合商社
         {'T': '8058.T', 'N': '三菱商事', 'NE': 'Mitsubishi Corp', 'S': '卸売', 'W': '☀️', 'R': 15.5, 'Y': 3.5, 'P': 25.0, 'Pr': 2860},
         {'T': '8001.T', 'N': '伊藤忠', 'NE': 'ITOCHU', 'S': '卸売', 'W': '☀️', 'R': 17.0, 'Y': 3.1, 'P': 28.0, 'Pr': 6620},
-        {'T': '2914.T', 'N': '日本たばこ', 'NE': 'JT', 'S': '食料品', 'W': '☁️', 'R': 16.2, 'Y': 6.2, 'P': 75.0, 'Pr': 4150},
-        {'T': '7203.T', 'N': 'トヨタ', 'NE': 'Toyota', 'S': '自動車', 'W': '☀️', 'R': 11.5, 'Y': 2.8, 'P': 30.0, 'Pr': 2650},
+        {'T': '8031.T', 'N': '三井物産', 'NE': 'Mitsui', 'S': '卸売', 'W': '☀️', 'R': 15.0, 'Y': 3.2, 'P': 28.0, 'Pr': 3100},
+        {'T': '8053.T', 'N': '住友商事', 'NE': 'Sumitomo Corp', 'S': '卸売', 'W': '☀️', 'R': 12.0, 'Y': 4.1, 'P': 30.0, 'Pr': 3300},
+        {'T': '8002.T', 'N': '丸紅', 'NE': 'Marubeni', 'S': '卸売', 'W': '☀️', 'R': 14.5, 'Y': 3.8, 'P': 25.0, 'Pr': 2450},
+        # 電力・インフラ
+        {'T': '9513.T', 'N': '電源開発', 'NE': 'J-POWER', 'S': '電力', 'W': '☁️', 'R': 7.5, 'Y': 4.2, 'P': 30.0, 'Pr': 2450},
+        {'T': '9503.T', 'N': '関西電力', 'NE': 'Kansai Elec', 'S': '電力', 'W': '☀️', 'R': 9.0, 'Y': 3.1, 'P': 25.0, 'Pr': 2100},
+        {'T': '9502.T', 'N': '中部電力', 'NE': 'Chubu Elec', 'S': '電力', 'W': '☀️', 'R': 8.5, 'Y': 3.2, 'P': 30.0, 'Pr': 1950},
         {'T': '9432.T', 'N': 'NTT', 'NE': 'NTT', 'S': '通信', 'W': '☀️', 'R': 12.5, 'Y': 3.2, 'P': 35.0, 'Pr': 180},
+        {'T': '9433.T', 'N': 'KDDI', 'NE': 'KDDI', 'S': '通信', 'W': '☀️', 'R': 13.5, 'Y': 4.0, 'P': 42.0, 'Pr': 4850},
+        # メーカー
+        {'T': '7203.T', 'N': 'トヨタ', 'NE': 'Toyota', 'S': '自動車', 'W': '☀️', 'R': 11.5, 'Y': 2.8, 'P': 30.0, 'Pr': 2650},
+        {'T': '7267.T', 'N': 'ホンダ', 'NE': 'Honda', 'S': '自動車', 'W': '☀️', 'R': 8.5, 'Y': 3.8, 'P': 30.0, 'Pr': 1600},
+        {'T': '6301.T', 'N': '小松製作所', 'NE': 'Komatsu', 'S': '機械', 'W': '☀️', 'R': 13.5, 'Y': 3.8, 'P': 40.0, 'Pr': 4200},
+        {'T': '1925.T', 'N': '大和ハウス', 'NE': 'Daiwa House', 'S': '建設', 'W': '☁️', 'R': 11.2, 'Y': 3.5, 'P': 35.0, 'Pr': 4200},
+        {'T': '1928.T', 'N': '積水ハウス', 'NE': 'Sekisui House', 'S': '建設', 'W': '☀️', 'R': 10.8, 'Y': 3.8, 'P': 40.0, 'Pr': 3250},
     ]
     df = pd.DataFrame(stocks)
     if current_lang == "English":
@@ -94,8 +110,8 @@ def generate_diverse_reason(row, current_lang):
         if row['ROE'] >= 12.0: return "Efficiency focus: Strong capital velocity."
         return "Balanced: Strong core fundamentals."
     else:
-        if row['Yield'] >= 4.5: return "利回り重視：インカムゲイン優位"
-        if row['ROE'] >= 12.0: return "効率重視：資本回転率が高い"
+        if row['Yield'] >= 4.5: return "利回り重視：高配当・高還元"
+        if row['ROE'] >= 12.0: return "効率重視：高い資本回転率"
         return "総合評価：強固な事業基盤を評価"
 
 @st.cache_data(ttl=3600)
@@ -127,10 +143,12 @@ def fetch_and_score(df, current_lang):
     res_df['Score'] = np.round(
         (res_df['ROE'] * 2.5) + (res_df['Yield'] * 3.5) - (res_df['Payout'] * 0.15) + (res_df['Trend'].map(w_map) * 15), 1
     )
+    # スコアを正規化（見栄えのため最高点付近を調整）
+    res_df['Score'] = np.round((res_df['Score'] / res_df['Score'].max()) * 98.5, 1)
     res_df['Note'] = res_df.apply(lambda r: generate_diverse_reason(r, current_lang), axis=1)
     return res_df
 
-with st.spinner('Analyzing...'):
+with st.spinner('Analyzing Universe...'):
     analyzed_df = fetch_and_score(get_master_data(lang), lang)
 
 # --- 5. サイドバー UI ---
