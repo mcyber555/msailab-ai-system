@@ -1,12 +1,53 @@
 name: Wake Up Streamlit App
+
 on:
   schedule:
-    - cron: '0 */10 * * *' # 10時間おきに実行（UTC基準）
-  workflow_dispatch: # ボタンから手動で実行してテストすることも可能に設定
+    # 12時間おきに実行（アプリが完全にスリープするのを防ぐ）
+    - cron: '0 */12 * * *'
+  workflow_dispatch: # 手動で「Run workflow」からテスト可能
 
 jobs:
-  ping:
+  wake-up:
     runs-on: ubuntu-latest
     steps:
-      - name: Send keep-alive request
-        run: curl -I https://ms-ailab.streamlit.app/
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm install playwright
+          npx playwright install chromium --with-deps
+
+      - name: Wake up the app and click button
+        run: |
+          node -e "
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage();
+            const url = 'https://ms-ailab.streamlit.app/';
+            
+            console.log('Visiting: ' + url);
+            await page.goto(url, { waitUntil: 'networkidle' });
+
+            // ボタンのテキストを指定して要素を取得
+            const wakeUpButton = page.locator('button:has-text(\"Yes, get this app back up!\")');
+            
+            if (await wakeUpButton.isVisible()) {
+              console.log('Sleep screen detected. Clicking the wake-up button...');
+              await wakeUpButton.click();
+              // サーバーの起動を待つために少し待機
+              await page.waitForTimeout(10000);
+              console.log('Wake up signal sent.');
+            } else {
+              console.log('The app is already awake or the button was not found.');
+            }
+
+            await browser.close();
+          })();
+          "
